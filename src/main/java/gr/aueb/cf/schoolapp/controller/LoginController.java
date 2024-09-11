@@ -20,13 +20,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.sql.SQLIntegrityConstraintViolationException;
+
 
 @WebServlet("/login")
 public class LoginController extends HttpServlet {
-
-    private final IUserDao userDao = new UserDAOImpl();
-    private final IUserService userService = new UserServiceImpl(userDao);
+//
+//    private final IUserDao userDao = new UserDAOImpl();
+//    private final IUserService userService = new UserServiceImpl(userDao);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -52,13 +52,13 @@ public class LoginController extends HttpServlet {
             if(principleIsAuthenticated) {
                 HttpSession session = request.getSession(false);
                 session.setAttribute("username", username);
-                session.setAttribute("role", userService.getUserByUsername(username).getRoleType().name() );
+                //session.setAttribute("role", userService.getUserByUsername(username).getRoleType().name() ); // role authentication
                 response.sendRedirect(request.getContextPath() + "/teachers");
 
             } else {
                 response.sendRedirect(request.getContextPath() + "/login?isError=true");
             }
-        } catch (UserDAOException | UserNotFoundException e) {
+        } catch (UserDAOException e) {
             response.sendRedirect(request.getContextPath() + "/login?isError=true");
         }
     }
