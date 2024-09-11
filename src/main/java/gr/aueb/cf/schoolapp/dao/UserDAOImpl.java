@@ -1,5 +1,6 @@
 package gr.aueb.cf.schoolapp.dao;
 
+import gr.aueb.cf.schoolapp.core.RoleType;
 import gr.aueb.cf.schoolapp.dao.exceptions.TeacherDAOException;
 import gr.aueb.cf.schoolapp.dao.exceptions.UserDAOException;
 import gr.aueb.cf.schoolapp.model.User;
@@ -16,7 +17,7 @@ import java.util.List;
 public class UserDAOImpl implements IUserDao{
     @Override
     public User insertUser(User user) throws UserDAOException {
-        String sql = "INSERT INTO users (username, password) VALUES(?,?)";
+        String sql = "INSERT INTO users (username, password, role) VALUES(?,?,?)";
 
         try (Connection connection = DBUtil.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -25,9 +26,11 @@ public class UserDAOImpl implements IUserDao{
             // extract model info
             String username = user.getUsername();
             String password = user.getPassword();
+            RoleType role = user.getRoleType();
 
             ps.setString(1, username);
             ps.setString(2, SecUtil.hashPassword(password));
+            ps.setString(3, role.name()); // name() enum to String
 
             ps.executeUpdate();
             //logging
@@ -52,7 +55,10 @@ public class UserDAOImpl implements IUserDao{
             ps.setString(1, username);
             rs = ps.executeQuery();
             if (rs.next()) {
-                user = new User(rs.getInt("id"), rs.getString("username"), rs.getString("password") );
+                user = new User(rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        RoleType.valueOf(rs.getString("role")));
             }
             return user;
         } catch (SQLException e) {
@@ -73,7 +79,10 @@ public class UserDAOImpl implements IUserDao{
             ps.setString(1, username);
             rs = ps.executeQuery();
             if (rs.next()) {
-                user = new User(rs.getInt("id"), rs.getString("username"), rs.getString("password") );
+                user = new User(rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        RoleType.valueOf(rs.getString("role"))); // we assume that DB role is not null
             } else {
                 return false;
             }

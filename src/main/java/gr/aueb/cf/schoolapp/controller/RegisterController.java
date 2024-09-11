@@ -41,6 +41,7 @@ public class RegisterController extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String confirmedPassword = request.getParameter("confirmedPassword");
+        String role = request.getParameter("role");
 
         String errorMessage;
         Map<String, String> errors;
@@ -53,7 +54,7 @@ public class RegisterController extends HttpServlet {
 
         try {
 
-            userInsertDTO = new UserInsertDTO(username, password, confirmedPassword);
+            userInsertDTO = new UserInsertDTO(username, password, confirmedPassword, role);
 
             errors = UserValidator.validate(userInsertDTO);
 
@@ -91,6 +92,6 @@ public class RegisterController extends HttpServlet {
     }
 
     private UserReadOnlyDTO mapToReadOnlyDTO(User user) {
-        return new UserReadOnlyDTO(user.getUserId(),user.getUsername(), user.getPassword() );
+        return new UserReadOnlyDTO(user.getUserId(),user.getUsername(), user.getPassword());
     }
 }
